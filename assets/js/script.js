@@ -5,7 +5,7 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
     if (!nextId) {
-        nextId = 1;
+        nextId = 0;
         console.log(nextId);
         return nextId;
     }
@@ -44,5 +44,5 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-
-});
+    
+})
