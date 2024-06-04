@@ -15,3 +15,6 @@ body {
     cursor: grab;
   }
   
+  .card {
+    z-index: 9000.1;
+  }
