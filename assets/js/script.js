@@ -13,14 +13,27 @@ function generateTaskId() {
 function createTaskCard(task) {
     var element = $("#todo-cards");
     let newCard =
-        `<div id= "${task.ID}" class="card draggable" style="width: 18rem;">
+        `<div id= "${nextId}" class="card draggable" style="width: 18rem;">
             <div class="card-body">
             <h5 class="card-title">${task.title}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${task.dueDate}</h6>
             <p class="card-text">${task.description}</p>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-danger delete-button">Delete</button>
             </div>`;
     element.append(newCard);
+
+    $(".draggable").draggable({
+        opacity: 0.7,
+        zIndex: 100,
+        helper: function (e) {
+            const original = $(e.target).hasClass("ui-draggable")
+                ? $(e.target)
+                : $(e.target).closest(".ui-draggable");
+            return original.clone().css({
+                width: original.outerWidth(),
+            });
+        }
+    });
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -35,19 +48,15 @@ function handleAddTask(event) {
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event) {
-    // {/* <div class="card">
-    //   <div class="card-body">
-    //     <h5 class="card-title">Card title</h5>
-    //     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    //     <button type="button" class="btn btn-danger">Delete</button>
-    //   </div>
-    // </div> */}
+
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-
-}
+    console.log("Dropping task");
+    const taskId = ui.draggable.attr("id");
+    const newProgress = $(event.target).closest(".droppable").attr("id");
+    const task = taskList.find((task) => task.id === parseInt(taskId));
+};
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
@@ -57,26 +66,8 @@ $(document).ready(function () {
 
     $(".droppable").droppable({
         accept: ".draggable",
-        drop: function (event, ui) {
-            // Add your logic here when a draggable element is dropped
-            $(ui.draggable).appendTo($(this)).addClass("dropped-element");
-        }
-    });
-
-
-    $(".draggable").draggable({
-        containment: "document", // Restrict dragging within the parent element
-        cursor: "move", // Set cursor style while dragging
-        snap: true, // Snap to grid or other elements
-        snapTolerance: 20, // Tolerance in pixels for snapping
-        revert: "invalid", // Revert the element if not dropped in a valid droppable target
-        start: function (event, ui) {
-            // Code to execute when dragging starts
-        },
-        stop: function (event, ui) {
-            // Code to execute when dragging stops
-        }
-    });
+        drop: handleDrop,
+    })
 });
 
 $(".ui-widget").submit(function (event) {
@@ -90,9 +81,6 @@ $(".ui-widget").submit(function (event) {
         ID: generateTaskId(),
         column: "to-do"
     };
-
-    console.log(formData.dueDate);
-    console.log(formData.unix);
 
     taskList.push(formData);
     $("#title").val("");
